@@ -1,0 +1,86 @@
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "get.h"
+
+int main(int argc, char* argcv[])
+{
+	tModul* Module = NULL;									//Pointer für die eingelesenen Module
+	int AnzahlModule = 0;									//Variable um die Anzahl der Module zu Speichern
+	float Abschlussnote;
+	char konsoleEingabe[15] = "";
+	int retVal;
+	unsigned int reihenfolge = 0;
+	int auslesefehler = 0;
+
+	printInterface();
+	retVal = scanf("%14s", konsoleEingabe);
+	
+
+	while (strcmp(konsoleEingabe,"ende")||auslesefehler == 1) {    
+
+		auslesefehler = 0;
+
+		if (!strcmp(konsoleEingabe, "einlesen")) {
+			//Aufgabe 1 und 2
+			system(CLEAR);
+			Module = CSVDateiEinlesenSpeichernAlstModul(&AnzahlModule);			//CSVDatei einlesen
+			if (!Module) auslesefehler = 1; 									//Beende das Programm falls Nullpointer als Rückgabewert
+			reihenfolge = 1;
+		}
+
+		else if (!strcmp(konsoleEingabe, "ausgabe")) {
+			//Aufgabe 3
+			system(CLEAR);
+			if (reihenfolge >= 1) {
+				AusgabeModule(Module, AnzahlModule);									//Ausgabe der einzelnen Module
+			}
+			else printf("Bitte lesen Sie zuerst eine Datei ein.\n\n");
+		}
+
+		else if (!strcmp(konsoleEingabe, "noten")) {
+			//Aufgabe 4
+			system(CLEAR);
+			if (reihenfolge >= 1) {
+				NotenAbfrage(Module, AnzahlModule);										//Einzelne Abfrage der Noten
+				reihenfolge += 1;
+			}
+			else printf("Bitte lesen Sie zuerst eine Datei ein.\n\n");
+		}
+
+		else if (!strcmp(konsoleEingabe, "schnitt")) {
+			//Aufgabe 5
+			system(CLEAR);
+			if (reihenfolge >= 2) {
+				Abschlussnote = BerechnungAbschlussnote(Module, AnzahlModule);			//Berechnung der Abschlussnote
+				reihenfolge += 1024;
+			}
+			else if (reihenfolge == 0) printf("Bitte lesen Sie zuerst eine Datei ein und geben Ihre Noten an.\n\n");
+			else printf("Bitte geben Sie zuerst Ihre Noten an.\n\n");
+		}
+
+		else if (!strcmp(konsoleEingabe, "drucken")) {
+			//Aufgabe 6
+			system(CLEAR);
+			if (reihenfolge >= 1024) {
+				CSVDateiAusgabe(Module, AnzahlModule, Abschlussnote);					//Ausgabe der Daten in CSV Datei
+			}
+			else if (reihenfolge == 0) printf("Bitte lesen Sie zuerst eine Datei ein, geben Ihre Noten an und lassen Ihren Schnitt errechnen.\n\n");
+			else if (reihenfolge == 1) printf("Bitte geben Sie zuerst Ihre Noten an und lassen Ihren Schnitt errechnen.\n\n");
+			else printf("Bitte lassen Sie zuerst Ihren Schnitt errechnen.\n\n");
+		}
+
+		else {
+			system(CLEAR);
+			printf("Ihre Eingabe war leider ungueltig.\n\n");
+		}
+		printInterface();
+		retVal = scanf("%14s", konsoleEingabe);
+		
+	}
+
+
+	return 0;
+}
